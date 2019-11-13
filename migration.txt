@@ -1,6 +1,20 @@
+CREATE TABLE tbl_access_token (
+	id int(5) NOT NULL AUTO_INCREMENT,
+	id_account int(11) NOT NULL,
+	token varchar(255),
+	refresh_token varchar(255),
+	flag_delete int(1),
+	created_at DATETIME,
+	updated_at DATETIME,
+	primary key(id)
+);
+
+INSERT INTO tbl_access_token(id_account, token, refresh_token, flag_delete, created_at, updated_at) VALUES(1, 'token1', 'token1', 0, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_access_token(id_account, token, refresh_token, flag_delete, created_at, updated_at) VALUES(2, 'token2', 'token2', 0, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+
 CREATE TABLE tbl_account (
 	id int(11) NOT NULL AUTO_INCREMENT,
-	avatars varchar(255) NOT NULL,
+	id_avatars int(5),
   username varchar(255) NOT NULL,
 	firstname varchar(255) NOT NULL,
 	lastname varchar(255) NOT NULL,
@@ -9,4 +23,75 @@ CREATE TABLE tbl_account (
 	created_at DATETIME,
 	updated_at DATETIME,
 	primary key(id)
+);
+
+INSERT INTO tbl_account(avatars, firstname, lastname, username, password, id_scope, created_at, updated_at) VALUES('https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png', 'Alexis', 'Courapied', 'taxisoopya@hotmail.fr', '3a77ea8d1d2223b13e8928d8f41c7274', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_account(avatars, firstname, lastname, username, password, id_scope, created_at, updated_at) VALUES('https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png', 'Valentin', 'Lafontaine', 'vlafont@gmail.com', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_account(avatars, firstname, lastname, username, password, id_scope, created_at, updated_at) VALUES('https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png', 'Steeven', 'Courapied', 'steeven7@gmail.com', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+
+CREATE TABLE lbl_scope (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	lockey varchar(255) NOT NULL,
+	created_at DATETIME,
+	updated_at DATETIME,
+	primary key(id)
+);
+
+INSERT INTO lbl_scope(lockey, created_at, updated_at) VALUES('user', UTC_TIMESTAMP(), UTC_TIMESTAMP());
+
+CREATE TABLE tbl_follow (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  id_account int(11) NOT NULL,
+  id_account_follow int(11) NOT NULL,
+  created_at DATETIME,
+	updated_at DATETIME,
+  PRIMARY KEY (id)
+);
+
+INSERT INTO tbl_follow (id_account, id_account_follow, created_at, updated_at) VALUES (1, 2, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+
+CREATE TABLE tbl_pictures (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  path varchar(255) NOT NULL,
+  origin varchar(255) NOT NULL,
+  created_at DATETIME,
+	updated_at DATETIME,
+  PRIMARY KEY (id)
+);
+CREATE TABLE tbl_avatars (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  path varchar(255) NOT NULL,
+  origin varchar(255) NOT NULL,
+  active int(1) NOT NULL,
+  created_at DATETIME,
+	updated_at DATETIME,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE tbl_friend_relation (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  id_account int(11) NOT NULL,
+  id_account2 int(11) NOT NULL,
+  created_at DATETIME,
+	updated_at DATETIME,
+  primary key(id)
+);
+
+CREATE TABLE tbl_post (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  id_account int(11) NOT NULL,
+  post TEXT NOT NULL,
+  id_pictures int(11),
+  created_at DATETIME,
+	updated_at DATETIME,
+  primary key(id)
+);
+
+CREATE TABLE tbl_post_like (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  id_post int(5) NOT NULL,
+  id_account int(5) NOT NULL,
+  created_at DATETIME,
+	updated_at DATETIME,
+  primary key(id)
 );

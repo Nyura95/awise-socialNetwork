@@ -14,10 +14,15 @@ This package is the http/socket server for the chat of https://appointrip.com
 
 ## Install
 
-With a [correctly configured](https://golang.org/doc/install#testing) Go toolchain:
+First, install golang on your computer [install GOlang](https://golang.org/doc/install)
+
+After install, go to '/Users/username/go/src' and copy/paste into this folder the project
+
+run a terminal and :
 
 ```sh
 go install
+go run main.go
 ```
 
 ## Run
@@ -37,19 +42,19 @@ See the package for read the doc
 Build for ubuntu run
 
 ```
-GOOS=linux GOARCH=amd64 go build -o messenger main.go
+GOOS=linux GOARCH=amd64 go build -o socialnetwork main.go
 ```
 
 Build for macos run
 
 ```
-GOOS=darwin GOARCH=amd64 go build -o messenger main.go
+GOOS=darwin GOARCH=amd64 go build -o socialnetwork main.go
 ```
 
 Build for window run
 
 ```
-GOOS=windows GOARCH=amd64 go build -o messenger.exe main.go
+GOOS=windows GOARCH=amd64 go build -o socialnetwork.exe main.go
 ```
 
-This command create a binary file named 'messenger' or 'messenger.exe'
+This command create a binary file named 'socialnetwork' or 'socialnetwork.exe'
