@@ -1,9 +1,9 @@
 package server
 
 import (
-	"awise-messenger/config"
-	"awise-messenger/server/middleware"
-	v2 "awise-messenger/server/v2"
+	"awise-socialNetwork/config"
+	"awise-socialNetwork/server/middleware"
+	v1 "awise-socialNetwork/server/v1"
 	"log"
 	"net/http"
 	"strconv"
@@ -32,10 +32,10 @@ func Start() {
 	private.Use(middleware.IsGoodToken)
 
 	// Login
-	public.HandleFunc("/api/v2/login", v2.Login).Methods("POST")
+	public.HandleFunc("/api/v1/login", v1.Login).Methods("POST")
 
 	// Ajax
-	r.HandleFunc("/", nil).Methods("OPTIONS")
+	public.HandleFunc("/", nil).Methods("OPTIONS")
 
 	log.Println("Start http server on localhost:" + strconv.Itoa(config.Port))
 	srv := &http.Server{

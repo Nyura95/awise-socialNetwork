@@ -1,9 +1,9 @@
-package v2
+package v1
 
 import (
-	"awise-messenger/helpers"
-	"awise-messenger/server/response"
-	"awise-messenger/server/worker"
+	"awise-socialNetwork/helpers"
+	"awise-socialNetwork/server/response"
+	"awise-socialNetwork/server/worker"
 	"encoding/json"
 	"log"
 	"net/http"

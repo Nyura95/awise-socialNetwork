@@ -16,8 +16,8 @@ CREATE TABLE tbl_account (
 	id int(11) NOT NULL AUTO_INCREMENT,
 	id_avatars int(5),
   username varchar(255) NOT NULL,
-	firstname varchar(255) NOT NULL,
-	lastname varchar(255) NOT NULL,
+	first_name varchar(255) NOT NULL,
+	last_name varchar(255) NOT NULL,
 	password varchar(255) NOT NULL,
 	id_scope int(11) NOT NULL,
 	created_at DATETIME,
@@ -25,11 +25,11 @@ CREATE TABLE tbl_account (
 	primary key(id)
 );
 
-INSERT INTO tbl_account(avatars, firstname, lastname, username, password, id_scope, created_at, updated_at) VALUES('https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png', 'Alexis', 'Courapied', 'taxisoopya@hotmail.fr', '3a77ea8d1d2223b13e8928d8f41c7274', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
-INSERT INTO tbl_account(avatars, firstname, lastname, username, password, id_scope, created_at, updated_at) VALUES('https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png', 'Valentin', 'Lafontaine', 'vlafont@gmail.com', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
-INSERT INTO tbl_account(avatars, firstname, lastname, username, password, id_scope, created_at, updated_at) VALUES('https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png', 'Steeven', 'Courapied', 'steeven7@gmail.com', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_account(id_avatars, first_name, last_name, username, password, id_scope, created_at, updated_at) VALUES(1, 'Alexis', 'Courapied', 'taxisoopya@hotmail.fr', '3a77ea8d1d2223b13e8928d8f41c7274', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_account(id_avatars, first_name, last_name, username, password, id_scope, created_at, updated_at) VALUES(1, 'Valentin', 'Lafontaine', 'vlafont@gmail.com', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_account(id_avatars, first_name, last_name, username, password, id_scope, created_at, updated_at) VALUES(1, 'Steeven', 'Courapied', 'steeven7@gmail.com', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
 
-CREATE TABLE lbl_scope (
+CREATE TABLE tbl_scope (
 	id int(11) NOT NULL AUTO_INCREMENT,
 	lockey varchar(255) NOT NULL,
 	created_at DATETIME,
@@ -37,7 +37,7 @@ CREATE TABLE lbl_scope (
 	primary key(id)
 );
 
-INSERT INTO lbl_scope(lockey, created_at, updated_at) VALUES('user', UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_scope(lockey, created_at, updated_at) VALUES('user', UTC_TIMESTAMP(), UTC_TIMESTAMP());
 
 CREATE TABLE tbl_follow (
   id int(11) NOT NULL AUTO_INCREMENT,
@@ -67,6 +67,8 @@ CREATE TABLE tbl_avatars (
 	updated_at DATETIME,
   PRIMARY KEY (id)
 );
+
+INSERT INTO tbl_avatars(path, origin, active, created_at, updated_at) VALUES ('https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png', 'migration', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP())
 
 CREATE TABLE tbl_friend_relation (
   id int(11) NOT NULL AUTO_INCREMENT,

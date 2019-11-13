@@ -1,9 +1,9 @@
 package main
 
 import (
-	"awise-messenger/config"
-	"awise-messenger/models"
-	"awise-messenger/server"
+	"awise-socialNetwork/config"
+	"awise-socialNetwork/models"
+	"awise-socialNetwork/server"
 )
 
 func main() {

@@ -1,8 +1,8 @@
 package worker
 
 import (
-	"awise-messenger/models"
-	"awise-messenger/server/response"
+	"awise-socialNetwork/models"
+	"awise-socialNetwork/server/response"
 	"crypto/md5"
 	"encoding/hex"
 	"log"
@@ -19,7 +19,7 @@ func Login(payload interface{}) interface{} {
 	context := payload.(LoginPayload)
 
 	hasher := md5.New()
-	hasher.Write([]byte(context.Password))
+	hasher.Write([]byte(context.Username + ":" + context.Password))
 
 	account, err := models.FindAccountByPassword(hex.EncodeToString(hasher.Sum(nil)))
 	if err != nil {
