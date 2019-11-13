@@ -1,0 +1,12 @@
+CREATE TABLE tbl_account (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	avatars varchar(255) NOT NULL,
+  username varchar(255) NOT NULL,
+	firstname varchar(255) NOT NULL,
+	lastname varchar(255) NOT NULL,
+	password varchar(255) NOT NULL,
+	id_scope int(11) NOT NULL,
+	created_at DATETIME,
+	updated_at DATETIME,
+	primary key(id)
+);
