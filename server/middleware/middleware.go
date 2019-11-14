@@ -1,9 +1,11 @@
 package middleware
 
 import (
+	"awise-messenger/helpers"
 	"awise-socialNetwork/models"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/context"
 )
@@ -39,7 +41,15 @@ func IsGoodToken(next http.Handler) http.Handler {
 			return
 		}
 
-		accessToken, err := models.FindAccessTokenByToken(token)
+		basic := strings.Split(token, " ")
+
+		if len(basic) != 2 || basic[0] != "Bearer" {
+			log.Println("format token is bad")
+			http.Error(w, "Not authorized", 401)
+			return
+		}
+
+		accessToken, err := models.FindAccessTokenByToken(basic[1])
 		if accessToken.ID == 0 || err != nil {
 			log.Println("auth does not found")
 			http.Error(w, "Not authorized", 401)
@@ -48,6 +58,14 @@ func IsGoodToken(next http.Handler) http.Handler {
 
 		if accessToken.FlagDelete != 0 {
 			log.Println("this token is delete")
+			http.Error(w, "Not authorized", 401)
+			return
+		}
+
+		if accessToken.ExpiredAt.Unix() < helpers.GetUtc().Unix() {
+			accessToken.FlagDelete = 1
+			accessToken.Update()
+			log.Println("this token is expired")
 			http.Error(w, "Not authorized", 401)
 			return
 		}

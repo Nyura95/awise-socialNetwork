@@ -34,6 +34,8 @@ func Start() {
 	// Login
 	public.HandleFunc("/api/v1/login", v1.Login).Methods("POST")
 
+	private.HandleFunc("/api/v1/account", v1.CreateAccount).Methods("POST")
+
 	// Ajax
 	public.HandleFunc("/", nil).Methods("OPTIONS")
 
