@@ -123,8 +123,8 @@ func DeleteAccessTokenByID(ID int) error {
 	return nil
 }
 
-// CreateAccessToken create a new access_token
-func CreateAccessToken(IDAccount int, expiredAt time.Time) (*AccessToken, error) {
+// NewAccessToken create a new access_token
+func NewAccessToken(IDAccount int, expiredAt time.Time) (*AccessToken, error) {
 	stmt, err := db.Prepare("INSERT INTO tbl_access_token(id_account, token, refresh_token, flag_delete, expired_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return nil, err

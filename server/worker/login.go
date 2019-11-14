@@ -41,7 +41,7 @@ func Login(payload interface{}) interface{} {
 	// 	return response.BasicResponse(new(interface{}), "Error disabled token", -4)
 	// }
 
-	accessToken, err := models.CreateAccessToken(account.ID, helpers.GetUtc().AddDate(0, 1, 0))
+	accessToken, err := models.NewAccessToken(account.ID, helpers.GetUtc().AddDate(0, 1, 0))
 	if err != nil {
 		log.Println("Error, create token")
 		log.Println(err)

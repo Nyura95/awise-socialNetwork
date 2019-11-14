@@ -1,0 +1,8 @@
+Authentification ok
+upload file
+compte :
+  - CRUD api
+friends
+post :
+  - CRUD
+  - like
