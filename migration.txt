@@ -52,6 +52,7 @@ CREATE TABLE tbl_pictures (
   id int(11) NOT NULL AUTO_INCREMENT,
   path varchar(255) NOT NULL,
   origin varchar(255) NOT NULL,
+  size varchar(255) NOT NULL,
   created_at DATETIME,
 	updated_at DATETIME,
   PRIMARY KEY (id)
@@ -60,6 +61,7 @@ CREATE TABLE tbl_avatars (
   id int(11) NOT NULL AUTO_INCREMENT,
   path varchar(255) NOT NULL,
   origin varchar(255) NOT NULL,
+  size varchar(255) NOT NULL,
   active int(1) NOT NULL,
   created_at DATETIME,
 	updated_at DATETIME,

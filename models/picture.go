@@ -10,6 +10,7 @@ type Picture struct {
 	ID        int       `json:"id"`
 	Path      string    `json:"path"`
 	Origin    string    `json:"origin"`
+	Size      string    `json:"size"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -17,13 +18,13 @@ type Picture struct {
 // FindPicture for find one picture by id
 func FindPicture(id int) (*Picture, error) {
 	picture := Picture{}
-	result, err := db.Query("SELECT id, path, origin, created_at, updated_at FROM tbl_pictures WHERE id = ? LIMIT 1", id)
+	result, err := db.Query("SELECT id, path, origin, size, created_at, updated_at FROM tbl_pictures WHERE id = ? LIMIT 1", id)
 	if err != nil {
 		return &picture, err
 	}
 	defer result.Close()
 	for result.Next() {
-		err := result.Scan(&picture.ID, &picture.Path, &picture.Origin, &picture.CreatedAt, &picture.UpdatedAt)
+		err := result.Scan(&picture.ID, &picture.Path, &picture.Origin, &picture.Size, &picture.CreatedAt, &picture.UpdatedAt)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -34,14 +35,14 @@ func FindPicture(id int) (*Picture, error) {
 // FindAllPicture for find all access_token in the database
 func FindAllPicture() ([]*Picture, error) {
 	pictures := []*Picture{}
-	result, err := db.Query("SELECT id, path, origin, created_at, updated_at FROM tbl_pictures")
+	result, err := db.Query("SELECT id, path, origin, size, created_at, updated_at FROM tbl_pictures")
 	if err != nil {
 		return pictures, err
 	}
 	defer result.Close()
 	for result.Next() {
 		picture := Picture{}
-		err := result.Scan(&picture.ID, &picture.Path, &picture.Origin, &picture.CreatedAt, &picture.UpdatedAt)
+		err := result.Scan(&picture.ID, &picture.Path, &picture.Origin, &picture.Size, &picture.CreatedAt, &picture.UpdatedAt)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -52,13 +53,13 @@ func FindAllPicture() ([]*Picture, error) {
 
 // Update a picture
 func (p *Picture) Update() error {
-	stmt, err := db.Prepare("UPDATE tbl_pictures SET path = ?, origin = ?, updated_at = ? WHERE id = ?")
+	stmt, err := db.Prepare("UPDATE tbl_pictures SET path = ?, origin = ?, size = ?, updated_at = ? WHERE id = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(p.Path, p.Origin, helpers.GetUtc(), p.ID)
+	_, err = stmt.Exec(p.Path, p.Origin, p.Size, helpers.GetUtc(), p.ID)
 	if err != nil {
 		return err
 	}
@@ -67,15 +68,15 @@ func (p *Picture) Update() error {
 }
 
 // NewPicture create a new access_token
-func NewPicture(path string, origin string) (*Picture, error) {
-	stmt, err := db.Prepare("INSERT INTO tbl_pictures(path, origin, created_at, updated_at) VALUES (?, ?, ?, ?)")
+func NewPicture(path string, origin string, size string) (*Picture, error) {
+	stmt, err := db.Prepare("INSERT INTO tbl_pictures(path, origin, size, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 	utc := helpers.GetUtc()
 
-	result, err := stmt.Exec(path, origin, utc, utc)
+	result, err := stmt.Exec(path, origin, size, utc, utc)
 	if err != nil {
 		return nil, err
 	}

@@ -8,13 +8,12 @@ import (
 
 // Config app
 type Config struct {
-	User       string
-	Host       string
-	Password   string
-	Database   string
-	Port       int
-	SocketPort int
-	StaticPort int
+	User          string
+	Host          string
+	Password      string
+	Database      string
+	Port          int
+	BasePathImage string
 }
 
 var config Config

@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"awise-socialNetwork/config"
 	"awise-socialNetwork/models"
 	"awise-socialNetwork/server/response"
 	"image/jpeg"
@@ -9,6 +10,7 @@ import (
 	"mime/multipart"
 	"os"
 	"strings"
+	"sync"
 
 	"github.com/nfnt/resize"
 )
@@ -18,17 +20,22 @@ type UploadPayload struct {
 	Image multipart.File
 }
 
+var imgResize = map[string]uint{
+	"small":  200,
+	"medium": 500,
+	"big":    1000,
+}
+
 // Upload return a basic response
 func Upload(payload interface{}) interface{} {
 	context := payload.(UploadPayload)
 
-	imgFile, err := ioutil.TempFile("images", "upload-*.png")
+	imgFileSource, err := ioutil.TempFile("images", "upload-*.jpg")
 	if err != nil {
 		log.Println("Error tmp file")
 		log.Println(err)
 		return response.BasicResponse(new(interface{}), "Error tmp file", -2)
 	}
-	defer imgFile.Close()
 
 	fileBytes, err := ioutil.ReadAll(context.Image)
 	if err != nil {
@@ -37,25 +44,56 @@ func Upload(payload interface{}) interface{} {
 		return response.BasicResponse(new(interface{}), "Error read picture", -2)
 	}
 
-	imgFile.Write(fileBytes)
+	imgFileSource.Write(fileBytes)
 
-	picture, err := models.NewPicture(strings.ReplaceAll(imgFile.Name(), "images/", ""), "server")
-	if err != nil {
-		log.Println("Error create picture")
-		log.Println(err)
-		return response.BasicResponse(new(interface{}), "Error create picture", -3)
+	var wg sync.WaitGroup
+	var pictures []*models.Picture
+
+	errors := make(chan error, len(imgResize))
+	defer close(errors)
+
+	configuration, _ := config.GetConfig()
+
+	for key, size := range imgResize {
+		wg.Add(1)
+		go func(key string, size uint) {
+			file, err := os.Open(imgFileSource.Name())
+			if err != nil {
+				errors <- err
+			}
+			defer file.Close()
+			imgFile, err := ioutil.TempFile("images", "upload-"+key+"-*.jpg")
+			if err != nil {
+				errors <- err
+			}
+			defer func() {
+				imgFile.Close()
+				wg.Done()
+			}()
+			pictureFile, err := jpeg.Decode(file)
+			if err != nil {
+				errors <- err
+			}
+			picture, err := models.NewPicture(configuration.BasePathImage+"/"+strings.ReplaceAll(imgFile.Name(), "images/", ""), "server", key)
+			if err != nil {
+				errors <- err
+			}
+			pictures = append(pictures, picture)
+			jpeg.Encode(imgFile, resize.Resize(size, 0, pictureFile, resize.Lanczos3), nil)
+		}(key, size)
 	}
 
-	go func(path string) {
-		file, _ := os.Open(path)
-		img, _ := jpeg.Decode(file)
-		file.Close()
-		m := resize.Resize(200, 0, img, resize.Lanczos3)
-		imgFile, _ := ioutil.TempFile("images", "upload-*.png")
-		defer imgFile.Close()
-		jpeg.Encode(imgFile, m, nil)
+	wg.Wait()
 
-	}(imgFile.Name())
+	if len(errors) != 0 {
+		log.Println("Error create pictures")
+		for err := range errors {
+			log.Println(err)
+		}
+	}
 
-	return response.BasicResponse(picture, "ok", 1)
+	imgFileSource.Close()
+	os.Remove(imgFileSource.Name())
+
+	return response.BasicResponse(pictures, "ok", 1)
 }
