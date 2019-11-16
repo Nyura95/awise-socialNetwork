@@ -20,6 +20,12 @@ type UploadPayload struct {
 	Image multipart.File
 }
 
+// UploadReturn it's the return of Upload
+type UploadReturn struct {
+	Pictures []*models.Picture
+	Errors   []string
+}
+
 var imgResize = map[string]uint{
 	"small":  200,
 	"medium": 500,
@@ -30,6 +36,7 @@ var imgResize = map[string]uint{
 func Upload(payload interface{}) interface{} {
 	context := payload.(UploadPayload)
 
+	// create a tmp file
 	imgFileSource, err := ioutil.TempFile("images", "upload-*.jpg")
 	if err != nil {
 		log.Println("Error tmp file")
@@ -37,6 +44,7 @@ func Upload(payload interface{}) interface{} {
 		return response.BasicResponse(new(interface{}), "Error tmp file", -2)
 	}
 
+	// read and get image bytes
 	fileBytes, err := ioutil.ReadAll(context.Image)
 	if err != nil {
 		log.Println("Error read picture")
@@ -44,56 +52,61 @@ func Upload(payload interface{}) interface{} {
 		return response.BasicResponse(new(interface{}), "Error read picture", -2)
 	}
 
+	// write into the tmp file the image bytes
 	imgFileSource.Write(fileBytes)
 
 	var wg sync.WaitGroup
-	var pictures []*models.Picture
+	uploadReturn := UploadReturn{}
 
-	errors := make(chan error, len(imgResize))
-	defer close(errors)
+	errorsPicture := make(chan error, len(imgResize))
 
 	configuration, _ := config.GetConfig()
 
 	for key, size := range imgResize {
 		wg.Add(1)
 		go func(key string, size uint) {
+			defer wg.Done()
 			file, err := os.Open(imgFileSource.Name())
 			if err != nil {
-				errors <- err
+				errorsPicture <- err
+				return
 			}
 			defer file.Close()
 			imgFile, err := ioutil.TempFile("images", "upload-"+key+"-*.jpg")
 			if err != nil {
-				errors <- err
+				errorsPicture <- err
+				return
 			}
-			defer func() {
-				imgFile.Close()
-				wg.Done()
-			}()
+			defer imgFile.Close()
+
 			pictureFile, err := jpeg.Decode(file)
 			if err != nil {
-				errors <- err
+				errorsPicture <- err
+				return
 			}
-			picture, err := models.NewPicture(configuration.BasePathImage+"/"+strings.ReplaceAll(imgFile.Name(), "images/", ""), "server", key)
+			picture, err := models.NewPicture(configuration.BasePathImage+"/"+strings.ReplaceAll(strings.ReplaceAll(imgFile.Name(), "images/", ""), "\\", "/"), "server", key)
 			if err != nil {
-				errors <- err
+				errorsPicture <- err
+				return
 			}
-			pictures = append(pictures, picture)
+			uploadReturn.Pictures = append(uploadReturn.Pictures, picture)
 			jpeg.Encode(imgFile, resize.Resize(size, 0, pictureFile, resize.Lanczos3), nil)
 		}(key, size)
 	}
 
-	wg.Wait()
-
-	if len(errors) != 0 {
-		log.Println("Error create pictures")
-		for err := range errors {
+	go func() {
+		for err := range errorsPicture {
+			log.Println("Error routine resize picture")
 			log.Println(err)
+			uploadReturn.Errors = append(uploadReturn.Errors, err.Error())
 		}
-	}
+	}()
+
+	wg.Wait()
+	close(errorsPicture)
 
 	imgFileSource.Close()
 	os.Remove(imgFileSource.Name())
 
-	return response.BasicResponse(pictures, "ok", 1)
+	return response.BasicResponse(uploadReturn, "ok", 1)
 }
