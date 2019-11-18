@@ -14,18 +14,26 @@ CREATE TABLE tbl_account (
 	id int(11) NOT NULL AUTO_INCREMENT,
 	id_avatars int(5),
   username varchar(255) NOT NULL,
-	first_name varchar(255) NOT NULL,
-	last_name varchar(255) NOT NULL,
+	first_name varchar(255),
+	last_name varchar(255),
 	password varchar(255) NOT NULL,
 	id_scope int(11) NOT NULL,
+
+  score int(11) NOT NULL,
+  level int(11) NOT NULL,
+  credits int(11) NOT NULL, 
+  phone varchar(255),
+  city varchar(255),
+  country varchar(255), 
+
 	created_at DATETIME,
 	updated_at DATETIME,
 	primary key(id)
 );
 
-INSERT INTO tbl_account(id_avatars, first_name, last_name, username, password, id_scope, created_at, updated_at) VALUES(1, 'Alexis', 'Courapied', 'taxisoopya@hotmail.fr', '3a77ea8d1d2223b13e8928d8f41c7274', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
-INSERT INTO tbl_account(id_avatars, first_name, last_name, username, password, id_scope, created_at, updated_at) VALUES(1, 'Valentin', 'Lafontaine', 'vlafont@gmail.com', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
-INSERT INTO tbl_account(id_avatars, first_name, last_name, username, password, id_scope, created_at, updated_at) VALUES(1, 'Steeven', 'Courapied', 'steeven7@gmail.com', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_account(id_avatars, first_name, last_name, username, score, level, credits, phone, city, country, password, id_scope, created_at, updated_at) VALUES(1, 'Alexis', 'Courapied', 'taxisoopya@hotmail.fr', 0, 0, 0, "0629418968", 'Paris', 'France', '3a77ea8d1d2223b13e8928d8f41c7274', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_account(id_avatars, first_name, last_name, username, score, level, credits, phone, city, country, password, id_scope, created_at, updated_at) VALUES(1, 'Valentin', 'Lafontaine', 'vlafont@gmail.com', 0, 0, 0, "0699999999", 'Valmondois', 'France', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
+INSERT INTO tbl_account(id_avatars, first_name, last_name, username, score, level, credits, phone, city, country, password, id_scope, created_at, updated_at) VALUES(1, 'Steeven', 'Courapied', 'steeven7@gmail.com', 0, 0, 0, "0644444444", 'Asnière-sur-seine', 'France', '3b1220be8c0796039f8f6b0c4eb2467a', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP());
 
 CREATE TABLE tbl_scope (
 	id int(11) NOT NULL AUTO_INCREMENT,
@@ -82,14 +90,39 @@ CREATE TABLE tbl_friend_relation (
 CREATE TABLE tbl_post (
   id int(11) NOT NULL AUTO_INCREMENT,
   id_account int(11) NOT NULL,
-  post TEXT NOT NULL,
+
+  description TEXT NOT NULL,
+
   id_pictures int(11),
+  id_views int(11),
+  id_category int(11) NOT NULL,
+
+  address varchar(255),
+  tags varchar(255),
+  score int(11) NOT NULL,
+  
+  created_at DATETIME,
+	updated_at DATETIME,
+  primary key(id)
+);
+
+CREATE TABLE tbl_category (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  lockey varchar(255) NOT NULL,
   created_at DATETIME,
 	updated_at DATETIME,
   primary key(id)
 );
 
 CREATE TABLE tbl_post_like (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  id_post int(5) NOT NULL,
+  id_account int(5) NOT NULL,
+  created_at DATETIME,
+	updated_at DATETIME,
+  primary key(id)
+);
+CREATE TABLE tbl_post_view (
   id int(11) NOT NULL AUTO_INCREMENT,
   id_post int(5) NOT NULL,
   id_account int(5) NOT NULL,
