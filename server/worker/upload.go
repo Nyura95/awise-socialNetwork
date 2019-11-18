@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/esimov/stackblur-go"
 	"github.com/nfnt/resize"
 )
 
@@ -24,6 +25,12 @@ type UploadPayload struct {
 type UploadReturn struct {
 	Pictures []*models.Picture
 	Errors   []string
+}
+
+var imgQuality = map[string][]int{
+	"small":  []int{50},
+	"medium": []int{75},
+	"big":    []int{75},
 }
 
 var imgResize = map[string]uint{
@@ -78,19 +85,22 @@ func Upload(payload interface{}) interface{} {
 				return
 			}
 			defer imgFile.Close()
+			draw.
 
 			pictureFile, err := jpeg.Decode(file)
 			if err != nil {
 				errorsPicture <- err
 				return
 			}
-			picture, err := models.NewPicture(configuration.BasePathImage+"/"+strings.ReplaceAll(strings.ReplaceAll(imgFile.Name(), "images/", ""), "\\", "/"), "server", key)
+
+			picture, err := models.NewPicture(configuration.BasePathImage+"/"+strings.ReplaceAll(imgFile.Name(), "images/", ""), "server", key)
 			if err != nil {
 				errorsPicture <- err
 				return
 			}
 			uploadReturn.Pictures = append(uploadReturn.Pictures, picture)
-			jpeg.Encode(imgFile, resize.Resize(size, 0, pictureFile, resize.Lanczos3), nil)
+			jpeg.Encode(imgFile, resize.Resize(size, 0, stackblur.Process(pictureFile, 60), resize.Lanczos3), &jpeg.Options{Quality: 30})
+
 		}(key, size)
 	}
 
