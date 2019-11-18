@@ -1,5 +1,5 @@
 Authentification ok
-upload file
+upload file ok
 compte :
   - CRUD api
 friends

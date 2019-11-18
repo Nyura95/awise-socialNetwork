@@ -27,16 +27,18 @@ type UploadReturn struct {
 	Errors   []string
 }
 
-var imgQuality = map[string][]int{
-	"small":  []int{50},
-	"medium": []int{75},
-	"big":    []int{75},
+// CraftItem variable image
+type CraftItem struct {
+	size    uint
+	radius  uint32
+	quality int
 }
 
-var imgResize = map[string]uint{
-	"small":  200,
-	"medium": 500,
-	"big":    1000,
+var craft = map[string]CraftItem{
+	"small-blured": CraftItem{radius: 50, size: 200, quality: 30},
+	"small":        CraftItem{radius: 0, size: 200, quality: 75},
+	"medium-bured": CraftItem{radius: 50, size: 500, quality: 30},
+	"medium":       CraftItem{radius: 0, size: 500, quality: 75},
 }
 
 // Upload return a basic response
@@ -65,13 +67,14 @@ func Upload(payload interface{}) interface{} {
 	var wg sync.WaitGroup
 	uploadReturn := UploadReturn{}
 
-	errorsPicture := make(chan error, len(imgResize))
+	// make a channel error for the goroutine
+	errorsPicture := make(chan error, len(craft))
 
 	configuration, _ := config.GetConfig()
 
-	for key, size := range imgResize {
+	for key, craftItem := range craft {
 		wg.Add(1)
-		go func(key string, size uint) {
+		go func(key string, size uint, radius uint32, quality int) {
 			defer wg.Done()
 			file, err := os.Open(imgFileSource.Name())
 			if err != nil {
@@ -79,13 +82,12 @@ func Upload(payload interface{}) interface{} {
 				return
 			}
 			defer file.Close()
-			imgFile, err := ioutil.TempFile("images", "upload-"+key+"-*.jpg")
+			imgFile, err := ioutil.TempFile("images", key+"-*.jpg")
 			if err != nil {
 				errorsPicture <- err
 				return
 			}
 			defer imgFile.Close()
-			draw.
 
 			pictureFile, err := jpeg.Decode(file)
 			if err != nil {
@@ -99,9 +101,14 @@ func Upload(payload interface{}) interface{} {
 				return
 			}
 			uploadReturn.Pictures = append(uploadReturn.Pictures, picture)
-			jpeg.Encode(imgFile, resize.Resize(size, 0, stackblur.Process(pictureFile, 60), resize.Lanczos3), &jpeg.Options{Quality: 30})
 
-		}(key, size)
+			if radius > 0 {
+				pictureFile = stackblur.Process(pictureFile, radius)
+			}
+
+			jpeg.Encode(imgFile, resize.Resize(size, 0, pictureFile, resize.Lanczos3), &jpeg.Options{Quality: quality})
+
+		}(key, craftItem.size, craftItem.radius, craftItem.quality)
 	}
 
 	go func() {
