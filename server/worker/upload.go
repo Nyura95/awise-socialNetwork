@@ -23,7 +23,7 @@ type UploadPayload struct {
 
 // UploadReturn it's the return of Upload
 type UploadReturn struct {
-	Pictures []*models.Picture
+	Pictures map[string]*models.Picture
 	Errors   []string
 }
 
@@ -37,8 +37,6 @@ type CraftItem struct {
 var craft = map[string]CraftItem{
 	"small-blured": CraftItem{radius: 50, size: 200, quality: 30},
 	"small":        CraftItem{radius: 0, size: 200, quality: 75},
-	"medium-bured": CraftItem{radius: 50, size: 500, quality: 30},
-	"medium":       CraftItem{radius: 0, size: 500, quality: 75},
 }
 
 // Upload return a basic response
@@ -46,7 +44,7 @@ func Upload(payload interface{}) interface{} {
 	context := payload.(UploadPayload)
 
 	// create a tmp file
-	imgFileSource, err := ioutil.TempFile("images", "upload-*.jpg")
+	imgFileSource, err := ioutil.TempFile("images", "original-*.jpg")
 	if err != nil {
 		log.Println("Error tmp file")
 		log.Println(err)
@@ -65,7 +63,7 @@ func Upload(payload interface{}) interface{} {
 	imgFileSource.Write(fileBytes)
 
 	var wg sync.WaitGroup
-	uploadReturn := UploadReturn{}
+	uploadReturn := UploadReturn{Pictures: make(map[string]*models.Picture), Errors: make([]string, 0)}
 
 	// make a channel error for the goroutine
 	errorsPicture := make(chan error, len(craft))
@@ -100,7 +98,8 @@ func Upload(payload interface{}) interface{} {
 				errorsPicture <- err
 				return
 			}
-			uploadReturn.Pictures = append(uploadReturn.Pictures, picture)
+
+			uploadReturn.Pictures[key] = picture
 
 			if radius > 0 {
 				pictureFile = stackblur.Process(pictureFile, radius)
@@ -123,7 +122,6 @@ func Upload(payload interface{}) interface{} {
 	close(errorsPicture)
 
 	imgFileSource.Close()
-	os.Remove(imgFileSource.Name())
 
 	return response.BasicResponse(uploadReturn, "ok", 1)
 }
