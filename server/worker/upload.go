@@ -35,8 +35,10 @@ type CraftItem struct {
 }
 
 var craft = map[string]CraftItem{
-	"small-blured": CraftItem{radius: 50, size: 200, quality: 30},
-	"small":        CraftItem{radius: 0, size: 200, quality: 75},
+	"small-blured":    CraftItem{radius: 50, size: 200, quality: 30},
+	"small":           CraftItem{radius: 0, size: 200, quality: 75},
+	"original":        CraftItem{radius: 0, size: 0, quality: 75},
+	"original-blured": CraftItem{radius: 50, size: 0, quality: 30},
 }
 
 // Upload return a basic response
@@ -44,7 +46,7 @@ func Upload(payload interface{}) interface{} {
 	context := payload.(UploadPayload)
 
 	// create a tmp file
-	imgFileSource, err := ioutil.TempFile("images", "original-*.jpg")
+	imgFileSource, err := ioutil.TempFile("images", "*.jpg")
 	if err != nil {
 		log.Println("Error tmp file")
 		log.Println(err)
@@ -122,6 +124,7 @@ func Upload(payload interface{}) interface{} {
 	close(errorsPicture)
 
 	imgFileSource.Close()
+	os.Remove(imgFileSource.Name())
 
 	return response.BasicResponse(uploadReturn, "ok", 1)
 }
