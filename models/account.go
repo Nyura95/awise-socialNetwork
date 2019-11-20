@@ -9,24 +9,27 @@ import (
 // Account table models
 type Account struct {
 	ID        int    `json:"id"`
-	IDAvatars string `json:"id_avatars"`
+	IDAvatars int    `json:"id_avatars"`
 	Firstname string `json:"first_name"`
 	Lastname  string `json:"last_name"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
 	Bio       string `json:"bio"`
-
-	Score   int    `json:"score"`
-	Level   int    `json:"level"`
-	Credits int    `json:"credits"`
-	Phone   string `json:"phone"`
-	City    string `json:"city"`
-	Country string `json:"country"`
-
+	Score     int    `json:"score"`
+	Level     int    `json:"level"`
+	Credits   int    `json:"credits"`
+	Phone     string `json:"phone"`
+	City      string `json:"city"`
+	Country   string `json:"country"`
 	password  string
 	IDScope   int       `json:"idScope"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+// AccountInfo account with list avatar
+type AccountInfo struct {
+	Account
 }
 
 // FindAccount for find one account by id

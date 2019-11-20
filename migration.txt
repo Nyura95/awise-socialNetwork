@@ -73,12 +73,21 @@ CREATE TABLE tbl_avatars (
   origin varchar(255) NOT NULL,
   size varchar(255) NOT NULL,
   active int(1) NOT NULL,
+  `delete` int(1) NOT NULL,
   created_at DATETIME,
 	updated_at DATETIME,
   PRIMARY KEY (id)
 );
 
-INSERT INTO tbl_avatars(path, origin, active, created_at, updated_at) VALUES ('https://ssl.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png', 'migration', 1, UTC_TIMESTAMP(), UTC_TIMESTAMP())
+CREATE TABLE tbl_account_avatar (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  id_avatar int(5) NOT NULL,
+  id_account int(5) NOT NULL,
+  created_at DATETIME,
+	updated_at DATETIME,
+  primary key(id)
+);
+
 
 CREATE TABLE tbl_friend_relation (
   id int(11) NOT NULL AUTO_INCREMENT,
