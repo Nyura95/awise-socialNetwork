@@ -14,6 +14,7 @@ type Config struct {
 	Database      string
 	Port          int
 	BasePathImage string
+	Version       string
 }
 
 var config Config

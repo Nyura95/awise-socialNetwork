@@ -1,5 +1,11 @@
 package response
 
+import (
+	"awise-socialNetwork/config"
+	"awise-socialNetwork/helpers"
+	"time"
+)
+
 // Response generic
 type Response struct {
 	StatusCode int         `json:"statusCode"`
@@ -7,6 +13,9 @@ type Response struct {
 	Comment    string      `json:"comment"`
 	Success    bool        `json:"success"`
 	Data       interface{} `json:"data"`
+	Hash       string      `json:"hash"`
+	Version    string      `json:"version"`
+	ServerTime time.Time   `json:"serverTime"`
 }
 
 // BasicResponse from API
@@ -17,6 +26,7 @@ func BasicResponse(data interface{}, comment string, reason int) Response {
 		success = true
 		statusCode = 200
 	}
-	basicResponse := Response{StatusCode: statusCode, Reason: reason, Comment: comment, Success: success, Data: data}
+	config, _ := config.GetConfig()
+	basicResponse := Response{StatusCode: statusCode, Reason: reason, Comment: comment, Success: success, Data: data, Hash: helpers.StringToMD5(helpers.Stringify(data)), ServerTime: helpers.GetUtc(), Version: config.Version}
 	return basicResponse
 }

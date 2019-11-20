@@ -10,18 +10,9 @@ import (
 )
 
 type createAccount struct {
-	idavatars []int
-	username  string
-	firstName string
-	lastName  string
-	password  string
-	idscope   int
-	score     int
-	level     int
-	credits   int
-	phone     string
-	city      string
-	country   string
+	Username string
+	Password string
+	Email    string
 }
 
 // CreateAccount for create a new account
@@ -29,8 +20,8 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	var body createAccount
 	decoder := json.NewDecoder(r.Body)
 	decoder.Decode(&body)
-
-	if body.username == "" || body.password == "" {
+	log.Println(body)
+	if body.Username == "" || body.Password == "" || body.Email == "" {
 		log.Printf("Body createAccount invalid")
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for createAccount is not valid (need username and password)", -1))
 		return
@@ -39,10 +30,10 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	pool := helpers.CreateWorkerPool(worker.CreateAccount)
 	defer pool.Close()
 
-	basicResponse := pool.Process(worker.CreateAccountPayload{IDAvatars: body.idavatars, Username: body.username, FirstName: body.firstName, LastName: body.lastName, Password: body.password, IDScope: body.idscope, Score: body.score, Level: body.level, Credits: body.credits, Phone: body.phone, City: body.city, Country: body.country}).(response.Response)
+	basicResponse := pool.Process(worker.CreateAccountPayload{Username: body.Username, Password: body.Password, Email: body.Email}).(response.Response)
 	if basicResponse.Success == false {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	json.NewEncoder(w).Encode("ok")
+	json.NewEncoder(w).Encode(basicResponse)
 }
