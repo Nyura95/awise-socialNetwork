@@ -60,7 +60,9 @@ INSERT INTO tbl_follow (id_account, id_account_follow, created_at, updated_at) V
 
 CREATE TABLE tbl_pictures (
   id int(11) NOT NULL AUTO_INCREMENT,
+  id_account int(11) NOT NULL,
   path varchar(255) NOT NULL,
+  pathBlured varchar(255) NOT NULL,
   origin varchar(255) NOT NULL,
   size varchar(255) NOT NULL,
   `delete` int(1) NOT NULL,
@@ -70,7 +72,9 @@ CREATE TABLE tbl_pictures (
 );
 CREATE TABLE tbl_avatars (
   id int(11) NOT NULL AUTO_INCREMENT,
+  id_account int(11) NOT NULL,
   path varchar(255) NOT NULL,
+  pathBlured varchar(255) NOT NULL,
   origin varchar(255) NOT NULL,
   size varchar(255) NOT NULL,
   active int(1) NOT NULL,
@@ -80,10 +84,11 @@ CREATE TABLE tbl_avatars (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE tbl_account_avatar (
+CREATE TABLE tbl_account_avatars (
   id int(11) NOT NULL AUTO_INCREMENT,
-  id_avatar int(5) NOT NULL,
-  id_account int(5) NOT NULL,
+  id_avatar int(11) NOT NULL,
+  id_account int(11) NOT NULL,
+  `delete` int(1) NOT NULL, 
   created_at DATETIME,
 	updated_at DATETIME,
   primary key(id)

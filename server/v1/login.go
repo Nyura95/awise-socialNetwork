@@ -10,8 +10,8 @@ import (
 )
 
 type login struct {
-	username string
-	password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 // Login authenticate an user
@@ -21,7 +21,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	decoder.Decode(&body)
 
-	if body.username == "" || body.password == "" {
+	if body.Username == "" || body.Password == "" {
 		log.Printf("Body login invalid")
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for login is not valid", -1))
 		return
@@ -30,7 +30,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	pool := helpers.CreateWorkerPool(worker.Login)
 	defer pool.Close()
 
-	basicResponse := pool.Process(worker.LoginPayload{Password: body.password, Username: body.username}).(response.Response)
+	basicResponse := pool.Process(worker.LoginPayload{Password: body.Password, Username: body.Username}).(response.Response)
 	if basicResponse.Success == false {
 		w.WriteHeader(http.StatusBadRequest)
 	}

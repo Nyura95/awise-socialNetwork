@@ -36,8 +36,10 @@ func Start() {
 
 	private.HandleFunc("/api/v1/account", v1.CreateAccount).Methods("POST")
 	private.HandleFunc("/api/v1/account/{id}", v1.GetAccount).Methods("GET")
+	private.HandleFunc("/api/v1/account/avatar", v1.AddAccountAvatar).Methods("POST")
 
-	private.HandleFunc("/api/v1/upload", v1.UploadImage).Methods("POST")
+	private.HandleFunc("/api/v1/upload/picture", v1.UploadPicture).Methods("POST")
+	private.HandleFunc("/api/v1/upload/avatar", v1.UploadAvatar).Methods("POST")
 
 	// Ajax
 	public.HandleFunc("/", nil).Methods("OPTIONS")

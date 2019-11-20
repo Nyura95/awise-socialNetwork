@@ -21,7 +21,7 @@ func CreateAccount(payload interface{}) interface{} {
 	accounts, err := models.FindAllAccountByEmailOrUsername(context.Email, context.Username)
 	if err != nil {
 		log.Println("Error FindAccountByEmailOrUsername")
-		log.Panicln(err)
+		log.Println(err)
 		return response.BasicResponse(new(interface{}), "Error server check account", -2)
 	}
 
@@ -41,7 +41,7 @@ func CreateAccount(payload interface{}) interface{} {
 	account, err := models.NewAccount(context.Username, context.Email, context.Password)
 	if err != nil {
 		log.Println("Error NewAccount")
-		log.Panicln(err)
+		log.Println(err)
 		return response.BasicResponse(new(interface{}), "Error server create account", -4)
 	}
 

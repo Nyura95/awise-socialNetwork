@@ -16,34 +16,35 @@ import (
 	"github.com/nfnt/resize"
 )
 
-// UploadPayload for call Upload
-type UploadPayload struct {
-	Image multipart.File
+// UploadPicturePayload for call Upload
+type UploadPicturePayload struct {
+	IDAccount int
+	Picture   multipart.File
 }
 
-// UploadReturn it's the return of Upload
-type UploadReturn struct {
+// UploadPictureReturn it's the return of Upload
+type UploadPictureReturn struct {
 	Pictures map[string]*models.Picture
 	Errors   []string
 }
 
-// CraftItem variable image
-type CraftItem struct {
+// CraftPictureItem variable image
+type CraftPictureItem struct {
 	size    uint
 	radius  uint32
 	quality int
 }
 
-var craft = map[string]CraftItem{
-	"small-blured":    CraftItem{radius: 50, size: 200, quality: 30},
-	"small":           CraftItem{radius: 0, size: 200, quality: 75},
-	"original":        CraftItem{radius: 0, size: 0, quality: 75},
-	"original-blured": CraftItem{radius: 50, size: 0, quality: 30},
+var craftPicture = map[string]CraftPictureItem{
+	"small-blured":    CraftPictureItem{radius: 50, size: 200, quality: 30},
+	"small":           CraftPictureItem{radius: 0, size: 200, quality: 75},
+	"original":        CraftPictureItem{radius: 0, size: 0, quality: 75},
+	"original-blured": CraftPictureItem{radius: 50, size: 0, quality: 30},
 }
 
-// Upload return a basic response
-func Upload(payload interface{}) interface{} {
-	context := payload.(UploadPayload)
+// UploadPicture return a basic response
+func UploadPicture(payload interface{}) interface{} {
+	context := payload.(UploadPicturePayload)
 
 	// create a tmp file
 	imgFileSource, err := ioutil.TempFile("images", "*.jpg")
@@ -54,7 +55,7 @@ func Upload(payload interface{}) interface{} {
 	}
 
 	// read and get image bytes
-	fileBytes, err := ioutil.ReadAll(context.Image)
+	fileBytes, err := ioutil.ReadAll(context.Picture)
 	if err != nil {
 		log.Println("Error read picture")
 		log.Println(err)
@@ -65,14 +66,14 @@ func Upload(payload interface{}) interface{} {
 	imgFileSource.Write(fileBytes)
 
 	var wg sync.WaitGroup
-	uploadReturn := UploadReturn{Pictures: make(map[string]*models.Picture), Errors: make([]string, 0)}
+	uploadReturn := UploadPictureReturn{Pictures: make(map[string]*models.Picture), Errors: make([]string, 0)}
 
 	// make a channel error for the goroutine
-	errorsPicture := make(chan error, len(craft))
+	errorsPicture := make(chan error, len(craftPicture))
 
 	configuration, _ := config.GetConfig()
 
-	for key, craftItem := range craft {
+	for key, craftItem := range craftPicture {
 		wg.Add(1)
 		go func(key string, size uint, radius uint32, quality int) {
 			defer wg.Done()
@@ -82,6 +83,7 @@ func Upload(payload interface{}) interface{} {
 				return
 			}
 			defer file.Close()
+
 			imgFile, err := ioutil.TempFile("images", key+"-*.jpg")
 			if err != nil {
 				errorsPicture <- err
@@ -89,13 +91,20 @@ func Upload(payload interface{}) interface{} {
 			}
 			defer imgFile.Close()
 
+			imgFileBlured, err := ioutil.TempFile("images", key+"Blured-*.jpg")
+			if err != nil {
+				errorsPicture <- err
+				return
+			}
+			defer imgFileBlured.Close()
+
 			pictureFile, err := jpeg.Decode(file)
 			if err != nil {
 				errorsPicture <- err
 				return
 			}
 
-			picture, err := models.NewPicture(configuration.BasePathImage+"/"+strings.ReplaceAll(imgFile.Name(), "images/", ""), "server", key)
+			picture, err := models.NewPicture(context.IDAccount, configuration.BasePathImage+"/"+strings.ReplaceAll(imgFile.Name(), "images/", ""), configuration.BasePathImage+"/"+strings.ReplaceAll(imgFileBlured.Name(), "images/", ""), "server", key)
 			if err != nil {
 				errorsPicture <- err
 				return
@@ -103,11 +112,8 @@ func Upload(payload interface{}) interface{} {
 
 			uploadReturn.Pictures[key] = picture
 
-			if radius > 0 {
-				pictureFile = stackblur.Process(pictureFile, radius)
-			}
-
 			jpeg.Encode(imgFile, resize.Resize(size, 0, pictureFile, resize.Lanczos3), &jpeg.Options{Quality: quality})
+			jpeg.Encode(imgFileBlured, resize.Resize(size, 0, stackblur.Process(pictureFile, 50), resize.Lanczos3), &jpeg.Options{Quality: 30})
 
 		}(key, craftItem.size, craftItem.radius, craftItem.quality)
 	}

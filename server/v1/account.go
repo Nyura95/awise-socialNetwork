@@ -9,13 +9,18 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 )
 
 type createAccount struct {
-	Username string
-	Password string
-	Email    string
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+}
+
+type addAccountAvatar struct {
+	IDAvatar int `json:"id_avatar"`
 }
 
 // CreateAccount for create a new account
@@ -55,6 +60,30 @@ func GetAccount(w http.ResponseWriter, r *http.Request) {
 	defer pool.Close()
 
 	basicResponse := pool.Process(worker.GetAccountPayload{ID: id}).(response.Response)
+	if basicResponse.Success == false {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	json.NewEncoder(w).Encode(basicResponse)
+}
+
+// AddAccountAvatar assign new avatar
+func AddAccountAvatar(w http.ResponseWriter, r *http.Request) {
+	IDUser := context.Get(r, "IDUser").(int)
+	var body addAccountAvatar
+	decoder := json.NewDecoder(r.Body)
+	decoder.Decode(&body)
+
+	if body.IDAvatar == 0 {
+		log.Printf("Body addAccountAvatar invalid")
+		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for addAccountAvatar is not valid (need idAvatar)", -1))
+		return
+	}
+
+	pool := helpers.CreateWorkerPool(worker.AddAccountAvatar)
+	defer pool.Close()
+
+	basicResponse := pool.Process(worker.AddAccountAvatarPayload{IDAccount: IDUser, IDAvatar: body.IDAvatar}).(response.Response)
 	if basicResponse.Success == false {
 		w.WriteHeader(http.StatusBadRequest)
 	}

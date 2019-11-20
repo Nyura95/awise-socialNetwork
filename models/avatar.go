@@ -7,26 +7,28 @@ import (
 
 // Avatar table models
 type Avatar struct {
-	ID        int       `json:"id"`
-	Path      string    `json:"path"`
-	Origin    string    `json:"origin"`
-	Size      string    `json:"size"`
-	Active    int       `json:"active"`
-	Delete    int       `json:"delete"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	ID         int       `json:"id"`
+	IDAccount  int       `json:"id_account"`
+	Path       string    `json:"path"`
+	PathBlured string    `json:"path_blured"`
+	Origin     string    `json:"origin"`
+	Size       string    `json:"size"`
+	Active     int       `json:"active"`
+	Delete     int       `json:"delete"`
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
 }
 
 // FindAvatar for find one avatar by id
 func FindAvatar(id int) (*Avatar, error) {
 	avatar := Avatar{}
-	result, err := db.Query("SELECT id, path, origin, size, active, `delete`, created_at, updated_at FROM tbl_avatars WHERE id = ?", id)
+	result, err := db.Query("SELECT id, id_account, path, path_blured, origin, size, active, `delete`, created_at, updated_at FROM tbl_avatars WHERE id = ?", id)
 	if err != nil {
 		return &avatar, err
 	}
 	defer result.Close()
 	for result.Next() {
-		err := result.Scan(&avatar.ID, &avatar.Path, &avatar.Origin, &avatar.Size, &avatar.Active, &avatar.CreatedAt, &avatar.UpdatedAt)
+		err := result.Scan(&avatar.ID, &avatar.IDAccount, &avatar.Path, &avatar.PathBlured, &avatar.Origin, &avatar.Size, &avatar.Active, &avatar.Delete, &avatar.CreatedAt, &avatar.UpdatedAt)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -37,14 +39,14 @@ func FindAvatar(id int) (*Avatar, error) {
 // FindAllAvatars for find all avatars in the database
 func FindAllAvatars() ([]*Avatar, error) {
 	avatars := []*Avatar{}
-	result, err := db.Query("SELECT id, path, origin, size, active, `delete`, created_at, updated_at FROM tbl_avatars")
+	result, err := db.Query("SELECT id, id_account, path, path_blured, origin, size, active, `delete`, created_at, updated_at FROM tbl_avatars")
 	if err != nil {
 		return avatars, err
 	}
 	defer result.Close()
 	for result.Next() {
 		avatar := Avatar{}
-		err := result.Scan(&avatar.ID, &avatar.Path, &avatar.Origin, &avatar.Size, &avatar.Active, &avatar.CreatedAt, &avatar.UpdatedAt)
+		err := result.Scan(&avatar.ID, &avatar.IDAccount, &avatar.Path, &avatar.PathBlured, &avatar.Origin, &avatar.Size, &avatar.Active, &avatar.CreatedAt, &avatar.UpdatedAt)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -55,13 +57,13 @@ func FindAllAvatars() ([]*Avatar, error) {
 
 // Update a user
 func (a *Avatar) Update() error {
-	stmt, err := db.Prepare("UPDATE tbl_avatars SET path = ?, origin = ?, size = ?, active = ?, `delete` = ?, updated_at = ? WHERE id = ?")
+	stmt, err := db.Prepare("UPDATE tbl_avatars SET path = ?, path_blured = ? origin = ?, size = ?, active = ?, `delete` = ?, updated_at = ? WHERE id = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(a.Path, a.Origin, a.Size, a.Active, a.Delete, time.UTC, a.ID)
+	_, err = stmt.Exec(a.Path, a.PathBlured, a.Origin, a.Size, a.Active, a.Delete, helpers.GetUtc(), a.ID)
 	if err != nil {
 		return err
 	}
@@ -70,9 +72,9 @@ func (a *Avatar) Update() error {
 }
 
 // NewAvatar create a new avatar
-func NewAvatar(path string, origin string, size string) (*Avatar, error) {
+func NewAvatar(idaccount int, path string, pathBlured string, origin string, size string) (*Avatar, error) {
 	avatar := &Avatar{}
-	stmt, err := db.Prepare("INSERT INTO tbl_account(path, origin, size, active, `delete`, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO tbl_avatars(id_account, path, path_blured, origin, size, active, `delete`, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return avatar, err
 	}
@@ -80,7 +82,7 @@ func NewAvatar(path string, origin string, size string) (*Avatar, error) {
 
 	utc := helpers.GetUtc()
 
-	result, err := stmt.Exec(path, origin, size, 0, 0, utc, utc)
+	result, err := stmt.Exec(idaccount, path, pathBlured, origin, size, 0, 0, utc, utc)
 	if err != nil {
 		return avatar, err
 	}

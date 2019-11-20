@@ -2,7 +2,6 @@ package models
 
 import (
 	"awise-socialNetwork/helpers"
-	"sync"
 	"time"
 )
 
@@ -22,9 +21,9 @@ type Account struct {
 	City      string `json:"city"`
 	Country   string `json:"country"`
 	password  string
-	IDScope   int       `json:"idScope"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	IDScope   int       `json:"id_scope"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // AccountInfo account with list avatar
@@ -104,30 +103,7 @@ func FindAllAccountByEmailOrUsername(email string, username string) ([]*Account,
 	return accounts, nil
 }
 
-// CheckAccountExist check if account exist
-func CheckAccountExist(IDAccounts ...int) bool {
-	jobs := make(chan bool, len(IDAccounts))
-	defer close(jobs)
-
-	var wg sync.WaitGroup
-	wg.Add(len(IDAccounts))
-
-	for _, IDAccount := range IDAccounts {
-		go func(IDAccount int) {
-			defer wg.Done()
-			account, err := FindAccount(IDAccount)
-			if err != nil || account.ID == 0 {
-				jobs <- false
-			}
-		}(IDAccount)
-	}
-
-	wg.Wait()
-
-	return len(jobs) == 0
-}
-
-// Update a user
+// Update a account
 func (a *Account) Update() error {
 	stmt, err := db.Prepare("UPDATE tbl_account SET avatars = ?, firstname = ?, lastname = ?, username = ?, bio = ?, score = ?, level = ?, credits = ?, phone = ?, city = ?, country = ?, password = ?, id_scope = ?, updated_at = ? WHERE id = ?")
 	if err != nil {
@@ -135,7 +111,7 @@ func (a *Account) Update() error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(a.IDAvatars, a.Firstname, a.Lastname, a.Username, a.Bio, a.Score, a.Level, a.Credits, a.Phone, a.City, a.Country, a.password, a.IDScope, time.UTC, a.ID)
+	_, err = stmt.Exec(a.IDAvatars, a.Firstname, a.Lastname, a.Username, a.Bio, a.Score, a.Level, a.Credits, a.Phone, a.City, a.Country, a.password, a.IDScope, helpers.GetUtc(), a.ID)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a78b1e17-354a-4645-897e-7608f7f12da0",
+		"_postman_id": "6b45f4b7-0888-4af5-b457-2dafd614f549",
 		"name": "socialNetwork",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -79,15 +79,52 @@
 			"response": []
 		},
 		{
-			"name": "Upload image",
+			"name": "set a new avatar",
 			"request": {
 				"method": "POST",
 				"header": [
 					{
 						"key": "Content-Type",
 						"name": "Content-Type",
-						"value": "application/x-www-form-urlencoded",
 						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJREFjY291bnQiOjEsIm5iZiI6MTQ0NDQ3ODQwMH0.CxToWPV5J2yf5TYWjmwVMDSEYUypXhIAyM3OFLIzRWY"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id_avatar\": 1\n}"
+				},
+				"url": {
+					"raw": "localhost:3000/api/v1/account/avatar",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"account",
+						"avatar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload picture",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded",
 						"disabled": true
 					},
 					{
@@ -100,14 +137,14 @@
 					"mode": "formdata",
 					"formdata": [
 						{
-							"key": "image",
+							"key": "picture",
 							"type": "file",
 							"src": "/Users/alexiscourapied/Downloads/WhatsApp Image 2019-11-19 at 11.56.13.jpeg"
 						}
 					]
 				},
 				"url": {
-					"raw": "localhost:3000/api/v1/upload",
+					"raw": "localhost:3000/api/v1/upload/picture",
 					"host": [
 						"localhost"
 					],
@@ -115,7 +152,52 @@
 					"path": [
 						"api",
 						"v1",
-						"upload"
+						"upload",
+						"picture"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload avatar",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJREFjY291bnQiOjEsIm5iZiI6MTQ0NDQ3ODQwMH0.CxToWPV5J2yf5TYWjmwVMDSEYUypXhIAyM3OFLIzRWY"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "avatar",
+							"type": "file",
+							"src": "/Users/alexiscourapied/Downloads/WhatsApp Image 2019-11-19 at 11.56.13.jpeg"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:3000/api/v1/upload/avatar",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"upload",
+						"avatar"
 					]
 				}
 			},

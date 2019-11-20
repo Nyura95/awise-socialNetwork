@@ -18,7 +18,7 @@ func GetAccount(payload interface{}) interface{} {
 	account, err := models.FindAccount(context.ID)
 	if err != nil {
 		log.Println("Error FindAccount")
-		log.Panicln(err)
+		log.Println(err)
 		return response.BasicResponse(new(interface{}), "Error server find account", -2)
 	}
 
