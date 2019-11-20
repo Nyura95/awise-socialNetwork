@@ -63,6 +63,7 @@ CREATE TABLE tbl_pictures (
   path varchar(255) NOT NULL,
   origin varchar(255) NOT NULL,
   size varchar(255) NOT NULL,
+  `delete` int(1) NOT NULL,
   created_at DATETIME,
 	updated_at DATETIME,
   PRIMARY KEY (id)
