@@ -20,7 +20,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	var body createAccount
 	decoder := json.NewDecoder(r.Body)
 	decoder.Decode(&body)
-	log.Println(body)
+
 	if body.Username == "" || body.Password == "" || body.Email == "" {
 		log.Printf("Body createAccount invalid")
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for createAccount is not valid (need username and password)", -1))
