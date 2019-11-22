@@ -9,7 +9,7 @@ import (
 
 // LoginPayload for call Login
 type LoginPayload struct {
-	Username string
+	Email    string
 	Password string
 }
 
@@ -17,16 +17,16 @@ type LoginPayload struct {
 func Login(payload interface{}) interface{} {
 	context := payload.(LoginPayload)
 
-	account, err := models.FindAccountByPassword(helpers.StringToMD5(context.Username + ":" + context.Password))
+	account, err := models.FindAccountByPassword(context.Email, context.Password)
 	if err != nil {
-		log.Println("Error, get account")
+		log.Println("Error FindAccountByPassword on Login")
 		log.Println(err)
-		return response.BasicResponse(new(interface{}), "Error get accounts", -2)
+		return response.BasicResponse(new(interface{}), "Error find account", -11)
 	}
 
-	if account.ID == 0 || account.Username != context.Username {
-		log.Println("Error, password or username not valid")
-		return response.BasicResponse(new(interface{}), "Error password or username is not valid", -3)
+	if account.ID == 0 || account.Email != context.Email {
+		log.Println("Password or username not valid on Login")
+		return response.BasicResponse(new(interface{}), "Password or username is not valid", -12)
 	}
 
 	// err = models.DeleteAllAccessTokenByIDAccount(account.ID)
@@ -38,9 +38,9 @@ func Login(payload interface{}) interface{} {
 
 	accessToken, err := models.NewAccessToken(account.ID, helpers.GetUtc().AddDate(0, 1, 0))
 	if err != nil {
-		log.Println("Error, create token")
+		log.Println("Error NewAccessToken on Login")
 		log.Println(err)
-		return response.BasicResponse(new(interface{}), "Error create token", -5)
+		return response.BasicResponse(new(interface{}), "Error create token", -11)
 	}
 
 	return response.BasicResponse(accessToken, "ok", 1)

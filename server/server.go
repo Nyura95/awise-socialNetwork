@@ -33,6 +33,7 @@ func Start() {
 
 	// Login
 	public.HandleFunc("/api/v1/login", v1.Login).Methods("POST")
+	public.HandleFunc("/api/v1/login/refresh", v1.RefreshLogin).Methods("POST")
 
 	private.HandleFunc("/api/v1/account", v1.CreateAccount).Methods("POST")
 	private.HandleFunc("/api/v1/account/{id}", v1.GetAccount).Methods("GET")

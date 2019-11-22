@@ -4,10 +4,11 @@ import (
 	"awise-socialNetwork/config"
 	"awise-socialNetwork/models"
 	"awise-socialNetwork/server/response"
+	"image"
 	"image/jpeg"
+	"image/png"
 	"io/ioutil"
 	"log"
-	"mime/multipart"
 	"os"
 	"strings"
 	"sync"
@@ -19,7 +20,8 @@ import (
 // UploadAvatarPayload for call Upload
 type UploadAvatarPayload struct {
 	IDAccount int
-	Avatar    multipart.File
+	Avatar    []byte
+	Ext       string
 }
 
 // UploadAvatarReturn it's the return of Upload
@@ -44,23 +46,15 @@ func UploadAvatar(payload interface{}) interface{} {
 	context := payload.(UploadAvatarPayload)
 
 	// create a tmp file
-	imgFileSource, err := ioutil.TempFile("images", "*.jpg")
+	imgFileSource, err := ioutil.TempFile("images", "*"+context.Ext)
 	if err != nil {
-		log.Println("Error tmp file")
+		log.Println("Error TempFile(imgFileSource) on UploadAvatar")
 		log.Println(err)
-		return response.BasicResponse(new(interface{}), "Error tmp file", -2)
+		return response.BasicResponse(new(interface{}), "Error tmp file", -11)
 	}
-
-	// read and get image bytes
-	fileBytes, err := ioutil.ReadAll(context.Avatar)
-	if err != nil {
-		log.Println("Error read picture")
-		log.Println(err)
-		return response.BasicResponse(new(interface{}), "Error read picture", -2)
-	}
-
 	// write into the tmp file the image bytes
-	imgFileSource.Write(fileBytes)
+	imgFileSource.Write(context.Avatar)
+	imgFileSource.Close()
 
 	var wg sync.WaitGroup
 	uploadReturn := UploadAvatarReturn{Avatars: make(map[string]*models.Avatar), Errors: make([]string, 0)}
@@ -76,47 +70,61 @@ func UploadAvatar(payload interface{}) interface{} {
 			defer wg.Done()
 			file, err := os.Open(imgFileSource.Name())
 			if err != nil {
+				log.Println("Error Open(file) on UploadAvatar")
 				errorsAvatar <- err
 				return
 			}
 			defer file.Close()
 
-			imgFile, err := ioutil.TempFile("images", key+"-*.jpg")
+			imgFile, err := ioutil.TempFile("images", key+"-*"+context.Ext)
 			if err != nil {
+				log.Println("Error TempFile(imgFile) on UploadAvatar")
 				errorsAvatar <- err
 				return
 			}
 			defer imgFile.Close()
-			imgFileBlured, err := ioutil.TempFile("images", key+"Blured-*.jpg")
+
+			imgFileBlured, err := ioutil.TempFile("images", key+"Blured-*"+context.Ext)
 			if err != nil {
+				log.Println("Error TempFile(imgFileBlured) on UploadAvatar")
 				errorsAvatar <- err
 				return
 			}
 			defer imgFileBlured.Close()
 
-			pictureFile, err := jpeg.Decode(file)
+			pictureFile, _, err := image.Decode(file)
 			if err != nil {
+				log.Println("Error Decode(pictureFile) on UploadAvatar")
 				errorsAvatar <- err
 				return
 			}
 
 			picture, err := models.NewAvatar(context.IDAccount, configuration.BasePathImage+"/"+strings.ReplaceAll(imgFile.Name(), "images/", ""), configuration.BasePathImage+"/"+strings.ReplaceAll(imgFileBlured.Name(), "images/", ""), "server", key)
 			if err != nil {
+				log.Println("Error NewAvatar on UploadAvatar")
 				errorsAvatar <- err
 				return
 			}
 
 			uploadReturn.Avatars[key] = picture
 
-			jpeg.Encode(imgFile, resize.Resize(size, 0, pictureFile, resize.Lanczos3), &jpeg.Options{Quality: quality})
-			jpeg.Encode(imgFileBlured, resize.Resize(size, 0, stackblur.Process(pictureFile, 50), resize.Lanczos3), &jpeg.Options{Quality: 30})
+			switch context.Ext {
+			case ".png":
+				// enc := &png.Encoder{
+				// 	CompressionLevel: png.DefaultCompression,
+				// }
+				png.Encode(imgFile, resize.Resize(size, 0, pictureFile, resize.Lanczos3))
+				png.Encode(imgFileBlured, resize.Resize(size, 0, stackblur.Process(pictureFile, 50), resize.Lanczos3))
+			case ".jpg":
+				jpeg.Encode(imgFile, resize.Resize(size, 0, pictureFile, resize.Lanczos3), &jpeg.Options{Quality: quality})
+				jpeg.Encode(imgFileBlured, resize.Resize(size, 0, stackblur.Process(pictureFile, 50), resize.Lanczos3), &jpeg.Options{Quality: 30})
+			}
 
 		}(key, craftItem.size, craftItem.quality)
 	}
 
 	go func() {
 		for err := range errorsAvatar {
-			log.Println("Error routine resize picture")
 			log.Println(err)
 			uploadReturn.Errors = append(uploadReturn.Errors, err.Error())
 		}
@@ -125,7 +133,6 @@ func UploadAvatar(payload interface{}) interface{} {
 	wg.Wait()
 	close(errorsAvatar)
 
-	imgFileSource.Close()
 	os.Remove(imgFileSource.Name())
 
 	return response.BasicResponse(uploadReturn, "ok", 1)

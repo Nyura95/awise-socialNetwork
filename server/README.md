@@ -24,3 +24,7 @@ func GetBody(next http.Handler) http.Handler {
 	})
 }
 ```
+
+### Error code
+
+> -1 body error
