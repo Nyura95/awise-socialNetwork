@@ -3,7 +3,6 @@ package response
 import (
 	"awise-socialNetwork/config"
 	"awise-socialNetwork/helpers"
-	"log"
 	"time"
 )
 
@@ -28,7 +27,6 @@ func BasicResponse(data interface{}, comment string, reason int) Response {
 		statusCode = 200
 	}
 	config, _ := config.GetConfig()
-	log.Println(helpers.Stringify(data))
 	basicResponse := Response{StatusCode: statusCode, Reason: reason, Comment: comment, Success: success, Data: data, Hash: helpers.StringToMD5(helpers.Stringify(data)), ServerTime: helpers.GetUtc(), Version: config.Version}
 	return basicResponse
 }
