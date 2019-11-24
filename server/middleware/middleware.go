@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"awise-messenger/helpers"
+	"awise-socialNetwork/helpers"
 	"awise-socialNetwork/models"
 	"log"
 	"net/http"
