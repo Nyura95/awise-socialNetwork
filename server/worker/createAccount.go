@@ -20,9 +20,9 @@ func CreateAccount(payload interface{}) interface{} {
 
 	accounts, err := models.FindAllAccountByEmailOrUsername(context.Email, context.Username)
 	if err != nil {
-		log.Println("Error FindAccountByEmailOrUsername")
+		log.Println("Error FindAccountByEmailOrUsername on CreateAccount")
 		log.Println(err)
-		return response.BasicResponse(new(interface{}), "Error server check account", -2)
+		return response.BasicResponse(new(interface{}), "Error find account", -11)
 	}
 
 	if len(accounts) > 0 {
@@ -35,14 +35,14 @@ func CreateAccount(payload interface{}) interface{} {
 				errors = append(errors, "email")
 			}
 		}
-		return response.BasicResponse(errors, "Error account already exist", -3)
+		return response.BasicResponse(errors, "Account already exist", -13)
 	}
 
 	account, err := models.NewAccount(context.Username, context.Email, context.Password)
 	if err != nil {
-		log.Println("Error NewAccount")
+		log.Println("Error NewAccount on CreateAccount")
 		log.Println(err)
-		return response.BasicResponse(new(interface{}), "Error server create account", -4)
+		return response.BasicResponse(new(interface{}), "Error create account", -11)
 	}
 
 	return response.BasicResponse(account, "ok", 1)

@@ -42,7 +42,24 @@ func FindAccessToken(id int) (*AccessToken, error) {
 // FindAccessTokenByToken for find one access_token by token
 func FindAccessTokenByToken(token string) (*AccessToken, error) {
 	accessToken := AccessToken{}
-	result, err := db.Query("SELECT id, id_account, token, refresh_token, flag_delete, expired_at, created_at, updated_at FROM tbl_access_token WHERE token = ? LIMIT 1", token)
+	result, err := db.Query("SELECT id, id_account, token, refresh_token, flag_delete, expired_at, created_at, updated_at FROM tbl_access_token WHERE token = ? AND flag_delete = 0 LIMIT 1", token)
+	if err != nil {
+		return &accessToken, err
+	}
+	defer result.Close()
+	for result.Next() {
+		err := result.Scan(&accessToken.ID, &accessToken.IDAccount, &accessToken.Token, &accessToken.RefreshToken, &accessToken.FlagDelete, &accessToken.ExpiredAt, &accessToken.CreatedAt, &accessToken.UpdatedAt)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+	return &accessToken, nil
+}
+
+// FindAccessTokenByRefreshToken for find one access_token by refreshToken
+func FindAccessTokenByRefreshToken(refreshToken string) (*AccessToken, error) {
+	accessToken := AccessToken{}
+	result, err := db.Query("SELECT id, id_account, token, refresh_token, flag_delete, expired_at, created_at, updated_at FROM tbl_access_token WHERE refresh_token = ? LIMIT 1", refreshToken)
 	if err != nil {
 		return &accessToken, err
 	}
@@ -134,7 +151,7 @@ func NewAccessToken(IDAccount int, expiredAt time.Time) (*AccessToken, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"IDAccount": IDAccount,
-		"nbf":       time.Date(2015, 10, 10, 12, 0, 0, 0, time.UTC).Unix(),
+		"nbf":       time.Now().Unix(),
 	})
 
 	tokenString, _ := token.SignedString(jwtKey)

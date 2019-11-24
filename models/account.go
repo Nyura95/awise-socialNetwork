@@ -26,6 +26,12 @@ type Account struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// AccountWithAvatar return table models account with the all avatars
+type AccountWithAvatar struct {
+	*Account
+	Avatar *Avatar `json:"avatar"`
+}
+
 // AccountInfo account with list avatar
 type AccountInfo struct {
 	Account
@@ -49,9 +55,9 @@ func FindAccount(id int) (*Account, error) {
 }
 
 // FindAccountByPassword for find one account by password
-func FindAccountByPassword(password string) (*Account, error) {
+func FindAccountByPassword(email string, password string) (*Account, error) {
 	account := Account{}
-	result, err := db.Query("SELECT id, id_avatars, first_name, last_name, username, bio, email, score, level, credits, phone, city, country, password, id_scope, created_at, updated_at FROM tbl_account WHERE password = ?", password)
+	result, err := db.Query("SELECT id, id_avatars, first_name, last_name, username, bio, email, score, level, credits, phone, city, country, password, id_scope, created_at, updated_at FROM tbl_account WHERE password = ?", helpers.StringToMD5(email+":"+password))
 	if err != nil {
 		return &account, err
 	}
@@ -130,7 +136,7 @@ func NewAccount(username string, email string, password string) (*Account, error
 
 	utc := helpers.GetUtc()
 
-	result, err := stmt.Exec(0, "", "", username, "", email, 0, 0, 0, "", "", "", helpers.StringToMD5(username+":"+password), 1, utc, utc)
+	result, err := stmt.Exec(0, "", "", username, "", email, 0, 0, 0, "", "", "", helpers.StringToMD5(email+":"+password), 1, utc, utc)
 	if err != nil {
 		return account, err
 	}

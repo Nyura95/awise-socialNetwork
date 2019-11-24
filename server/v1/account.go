@@ -31,7 +31,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 	if body.Username == "" || body.Password == "" || body.Email == "" {
 		log.Printf("Body createAccount invalid")
-		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for createAccount is not valid (need username and password)", -1))
+		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for createAccount is not valid", -1))
 		return
 	}
 
@@ -50,9 +50,9 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 func GetAccount(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		log.Printf("GetAccount parsing query params error")
+		log.Printf("parsing query for GetAccount invalid")
 		log.Println(err)
-		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "id query is not valid", -1))
+		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The query for GetAccount is not valid", -1))
 		return
 	}
 
@@ -76,7 +76,7 @@ func AddAccountAvatar(w http.ResponseWriter, r *http.Request) {
 
 	if body.IDAvatar == 0 {
 		log.Printf("Body addAccountAvatar invalid")
-		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for addAccountAvatar is not valid (need idAvatar)", -1))
+		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for addAccountAvatar is not valid", -1))
 		return
 	}
 
