@@ -1,7 +1,6 @@
 package worker
 
 import (
-	"awise-socialNetwork/config"
 	"awise-socialNetwork/models"
 	"awise-socialNetwork/server/response"
 	"image"
@@ -62,8 +61,6 @@ func UploadAvatar(payload interface{}) interface{} {
 	// make a channel error for the goroutine
 	errorsAvatar := make(chan error, len(craftAvatar))
 
-	configuration, _ := config.GetConfig()
-
 	for key, craftItem := range craftAvatar {
 		wg.Add(1)
 		go func(key string, size uint, quality int) {
@@ -99,7 +96,7 @@ func UploadAvatar(payload interface{}) interface{} {
 				return
 			}
 
-			picture, err := models.NewAvatar(context.IDAccount, configuration.BasePathImage+"/"+strings.ReplaceAll(imgFile.Name(), "images/", ""), configuration.BasePathImage+"/"+strings.ReplaceAll(imgFileBlured.Name(), "images/", ""), "server", key)
+			picture, err := models.NewAvatar(context.IDAccount, os.Getenv("BASEPATHIMAGE")+"/"+strings.ReplaceAll(imgFile.Name(), "images/", ""), os.Getenv("BASEPATHIMAGE")+"/"+strings.ReplaceAll(imgFileBlured.Name(), "images/", ""), "server", key)
 			if err != nil {
 				log.Println("Error NewAvatar on UploadAvatar")
 				errorsAvatar <- err

@@ -1,12 +1,11 @@
 package server
 
 import (
-	"awise-socialNetwork/config"
 	"awise-socialNetwork/server/middleware"
 	v1 "awise-socialNetwork/server/v1"
 	"log"
 	"net/http"
-	"strconv"
+	"os"
 	"time"
 
 	"github.com/gorilla/handlers"
@@ -15,7 +14,6 @@ import (
 
 // Start for start the http server
 func Start() {
-	config, _ := config.GetConfig()
 	r := mux.NewRouter()
 
 	// Cors auth
@@ -45,10 +43,10 @@ func Start() {
 	// Ajax
 	public.HandleFunc("/", nil).Methods("OPTIONS")
 
-	log.Println("Start http server on localhost:" + strconv.Itoa(config.Port))
+	log.Println("Start http server on localhost:" + os.Getenv("PORT"))
 	srv := &http.Server{
 		Handler:      handlers.CORS(originsOk, headersOk, methodsOk)(r),
-		Addr:         "127.0.0.1:" + strconv.Itoa(config.Port),
+		Addr:         "127.0.0.1:" + os.Getenv("PORT"),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
