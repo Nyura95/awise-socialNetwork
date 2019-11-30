@@ -45,5 +45,12 @@ func CreateAccount(payload interface{}) interface{} {
 		return response.BasicResponse(new(interface{}), "Error create account", -11)
 	}
 
-	return response.BasicResponse(account, "ok", 1)
+	Avatar, err := models.NewAvatar(account.ID, "https://image.awise.co/s9igio6ytzc885ngio10i.jpg", "https://image.awise.co/s9igio6ytzc885ngio10i.jpg", "default", "default")
+	if err != nil {
+		log.Println("Error NewAvatar on CreateAccount")
+		log.Println(err)
+		return response.BasicResponse(new(interface{}), "Error create account", -11)
+	}
+
+	return response.BasicResponse(models.AccountWithAvatar{Account: account, Avatar: Avatar}, "ok", 1)
 }

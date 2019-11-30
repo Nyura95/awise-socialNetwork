@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type login struct {
@@ -34,7 +35,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	pool := helpers.CreateWorkerPool(worker.Login)
 	defer pool.Close()
 
-	basicResponse := pool.Process(worker.LoginPayload{Password: body.Password, Email: body.Email}).(response.Response)
+	basicResponse := pool.Process(worker.LoginPayload{Password: body.Password, Email: strings.ToLower(body.Email)}).(response.Response)
 	if basicResponse.Success == false {
 		w.WriteHeader(http.StatusBadRequest)
 	}
