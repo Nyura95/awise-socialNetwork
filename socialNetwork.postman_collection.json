@@ -25,7 +25,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"email\": \"test3@test.com\",\n\t\"password\": \"azerty95\"\n}"
+					"raw": "{\n\t\"email\": \"AmazonPrime@test.com\",\n\t\"password\": \"azerty95\"\n}"
 				},
 				"url": {
 					"raw": "localhost:3000/api/v1/login",
@@ -37,6 +37,44 @@
 						"api",
 						"v1",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "google auth",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "token1",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"token\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6ImRlZThkM2RhZmJmMzEyNjJhYjkzNDdkNjIwMzgzMjE3YWZkOTZjYTMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiMjkzNDI3NjM1OTg4LWJqdDFpajYyaDBlaDllZ2hvMnFkMmRnZnRkb2g4dDExLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMjkzNDI3NjM1OTg4LWJqdDFpajYyaDBlaDllZ2hvMnFkMmRnZnRkb2g4dDExLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA3NjIyOTU1ODMyNzY1NTIzNjAzIiwiaGQiOiJjaXR5c2Nvb3QuZXUiLCJlbWFpbCI6ImEuY291cmFwaWVkQGNpdHlzY29vdC5ldSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdF9oYXNoIjoiekl4dTY0WHBUQWtzNm5ud3lTVUVGQSIsIm5hbWUiOiJBbGV4aXMgQ291cmFwaWVkIiwicGljdHVyZSI6Imh0dHBzOi8vbGg1Lmdvb2dsZXVzZXJjb250ZW50LmNvbS8tajRlbW9jZ1A1TmMvQUFBQUFBQUFBQUkvQUFBQUFBQUFBQUEvQUNIaTNyZlotUk9tX2tPN25oM3BLXzdfUDZxYmx6UFFTdy9zOTYtYy9waG90by5qcGciLCJnaXZlbl9uYW1lIjoiQWxleGlzIiwiZmFtaWx5X25hbWUiOiJDb3VyYXBpZWQiLCJsb2NhbGUiOiJmciIsImlhdCI6MTU3NTIxNDI0MCwiZXhwIjoxNTc1MjE3ODQwLCJqdGkiOiI3ODJjNjE4MjkyZTAzNDM2MjA3OWNmZGUxNmU4ZjYzN2M5MGRjM2MwIn0.Vy8fJkr2vKicmg7JifsmePOE8la1EAaDbH4dsAtlv3k1D3qr_uqraPGJElDN23iNSZKjtOYR1jsMJZrYZK7k9EhMvFJ5TLf9vgbUN0u6A5DeNwcmwRHga0oC9XjP6bVMHtadrCvQLtt41YkAbdAcikpFlt9QCtM0ZoHr6dGhSKtGIgUIuM6iWbOm0Aw1qb9ORfFs9-DOakOIIQ_58LE11k9KQ3JVg2gMH5z-xhBITmBGztNT2HFoKSJwpyLrrhREDz6MT7M_SLkjVhVPSX5BISUrLagQS1BWmBEUuMIXiWwrgyugUG7PecSgymue6KpR-mdYvxpJQC67FBnshTNzzg\"\n}"
+				},
+				"url": {
+					"raw": "localhost:3000/api/v1/login/google",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"login",
+						"google"
 					]
 				}
 			},
@@ -94,12 +132,13 @@
 					{
 						"key": "Authorization",
 						"type": "text",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJREFjY291bnQiOjEsIm5iZiI6MTQ0NDQ3ODQwMH0.CxToWPV5J2yf5TYWjmwVMDSEYUypXhIAyM3OFLIzRWY"
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJREFjY291bnQiOjEsIm5iZiI6MTQ0NDQ3ODQwMH0.CxToWPV5J2yf5TYWjmwVMDSEYUypXhIAyM3OFLIzRWY",
+						"disabled": true
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"username\": \"Nyura2\",\n\t\"email\": \"test3@test.com\",\n\t\"password\": \"azerty95\"\n}"
+					"raw": "{\n\t\"username\": \"randomlol\",\n\t\"email\": \"AmazonPrime@test.com\",\n\t\"password\": \"azerty95\"\n}"
 				},
 				"url": {
 					"raw": "localhost:3000/api/v1/account",
