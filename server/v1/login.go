@@ -19,6 +19,10 @@ type refreshLogin struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+type googleLogin struct {
+	Token string `json:"token"`
+}
+
 // Login authenticate an user
 func Login(w http.ResponseWriter, r *http.Request) {
 
@@ -65,5 +69,27 @@ func RefreshLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(basicResponse)
+}
 
+// GoogleLogin authenticate user by google token
+func GoogleLogin(w http.ResponseWriter, r *http.Request) {
+	var body googleLogin
+	decoder := json.NewDecoder(r.Body)
+	decoder.Decode(&body)
+
+	if body.Token == "" {
+		log.Printf("Body google login invalid")
+		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for google login is not valid", -1))
+		return
+	}
+
+	pool := helpers.CreateWorkerPool(worker.GoogleLogin)
+	defer pool.Close()
+
+	basicResponse := pool.Process(worker.GoogleLoginPayload{Token: body.Token}).(response.Response)
+	if basicResponse.Success == false {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	json.NewEncoder(w).Encode(basicResponse)
 }

@@ -71,6 +71,23 @@ func FindAccountByPassword(email string, password string) (*Account, error) {
 	return &account, nil
 }
 
+// FindAccountByEmail for find one account by email
+func FindAccountByEmail(email string) (*Account, error) {
+	account := Account{}
+	result, err := db.Query("SELECT id, id_avatars, first_name, last_name, username, bio, email, score, level, credits, phone, city, country, password, id_scope, created_at, updated_at FROM tbl_account WHERE email = ?", email)
+	if err != nil {
+		return &account, err
+	}
+	defer result.Close()
+	for result.Next() {
+		err := result.Scan(&account.ID, &account.IDAvatars, &account.Firstname, &account.Lastname, &account.Username, &account.Bio, &account.Email, &account.Score, &account.Level, &account.Credits, &account.Phone, &account.City, &account.Country, &account.password, &account.IDScope, &account.CreatedAt, &account.UpdatedAt)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+	return &account, nil
+}
+
 // FindAllAccount for find all accounts in the database
 func FindAllAccount() ([]*Account, error) {
 	accounts := []*Account{}
