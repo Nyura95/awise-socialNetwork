@@ -52,6 +52,7 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 	file, handler, err := r.FormFile("avatar")
 	if err != nil {
 		log.Printf("Body uploadAvatar invalid")
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for uploadAvatar is not valid", -1))
 		return
 	}
@@ -60,6 +61,7 @@ func UploadAvatar(w http.ResponseWriter, r *http.Request) {
 	bFile, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Printf("Error read file")
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "Error reading image", -2))
 		return
 	}

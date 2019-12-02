@@ -31,6 +31,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 	if body.Username == "" || body.Password == "" || body.Email == "" {
 		log.Printf("Body createAccount invalid")
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for createAccount is not valid", -1))
 		return
 	}
@@ -52,6 +53,7 @@ func GetAccount(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("parsing query for GetAccount invalid")
 		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The query for GetAccount is not valid", -1))
 		return
 	}
@@ -76,6 +78,7 @@ func AddAccountAvatar(w http.ResponseWriter, r *http.Request) {
 
 	if body.IDAvatar == 0 {
 		log.Printf("Body addAccountAvatar invalid")
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for addAccountAvatar is not valid", -1))
 		return
 	}

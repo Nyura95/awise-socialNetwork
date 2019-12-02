@@ -32,6 +32,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if body.Email == "" || body.Password == "" {
 		log.Printf("Body login invalid")
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for login is not valid", -1))
 		return
 	}
@@ -56,6 +57,7 @@ func RefreshLogin(w http.ResponseWriter, r *http.Request) {
 
 	if body.RefreshToken == "" {
 		log.Printf("Body refresh login invalid")
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for refresh login is not valid", -1))
 		return
 	}
@@ -79,6 +81,7 @@ func GoogleLogin(w http.ResponseWriter, r *http.Request) {
 
 	if body.Token == "" {
 		log.Printf("Body google login invalid")
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response.BasicResponse(new(interface{}), "The body for google login is not valid", -1))
 		return
 	}
